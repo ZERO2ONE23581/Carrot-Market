@@ -11,20 +11,28 @@ interface EnterForm {
 }
 
 const Enter: NextPage = () => {
+  const [loading, setLoading] = useState(false);
   const { register, watch, reset, handleSubmit } = useForm<EnterForm>();
 
   const [method, setMethod] = useState<"email" | "phone">("email");
   const onEmailClick = () => {
-    reset(), setMethod("email"); //클릭하면 리셋
+    reset(), setMethod("email");
   };
   const onPhoneClick = () => {
-    reset(), setMethod("phone"); //클릭하면 리셋
+    reset(), setMethod("phone");
   };
 
-  console.log(watch());
-
   const onValid = (data: EnterForm) => {
-    console.log(data);
+    setLoading(true);
+    //1. 데이터 전송 (json형태로 api로 보냄)
+    fetch("/api/users/enter", {
+      method: "POST",
+      body: JSON.stringify(data),
+      //아래 코드 없으면 req.body.email 형태 컴파일링안됨!;
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then(() => setLoading(false));
   };
 
   return (
@@ -78,8 +86,12 @@ const Enter: NextPage = () => {
               kind="phone"
             />
           ) : null}
-          {method === "email" ? <Button text={"Get login link"} /> : null}
-          {method === "phone" ? <Button text={"Get one-time password"} /> : null}
+          {method === "email" ? (
+            <Button text={loading ? "LOADING..." : "Get login link"} />
+          ) : null}
+          {method === "phone" ? (
+            <Button text={loading ? "LOADING..." : "Get one-time password"} />
+          ) : null}
         </form>
 
         <div className="mt-8">
