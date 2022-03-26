@@ -1,30 +1,34 @@
 import type { NextPage } from "next";
+import FloatingButton from "../components/floating-button";
+import Item from "../components/item";
+import Layout from "../components/layout";
 
 const Home: NextPage = () => {
   return (
-    <div className="bg-red-400 py-20 px-10 flex flex-col space-y-5">
-      <div className="bg-white p-6 rounded-2xl shadow-xl">
-        <span className="font-semibold text-3xl">Select Item</span>
-        <div className="flex justify-between my-2">
-          <span className="text-gray-500">Chair</span>
-          <span className="font-semibold">$20</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-gray-500">Table</span>
-          <span className="font-semibold">$40</span>
-        </div>
-        <div className="flex justify-between mt-2 pt-2 border-t-2 border-dashed">
-          <span>Total</span>
-          <span className="font-semibold">$60</span>
-        </div>
-        <div className="mt-5 bg-blue-500 text-white p-3 text-center rounded-2xl w-2/4 mx-auto">
-          Checkout
-        </div>
+    <Layout title="홈" hasTabBar>
+      <div className="flex flex-col space-y-5 divide-y">
+        {[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((_, i) => (
+          <Item id={i} key={i} title="iPhone 14" price={99} comments={1} hearts={1} />
+        ))}
+        <FloatingButton href="/items/upload">
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+        </FloatingButton>
       </div>
-      <div className="bg-white p-10 rounded-2xl shadow-xl"></div>
-      <div className="bg-white p-10 rounded-2xl shadow-xl"></div>
-      <div className="bg-white p-10 rounded-2xl shadow-xl"></div>
-    </div>
+    </Layout>
   );
 };
 
