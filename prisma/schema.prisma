@@ -3,11 +3,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures=["referentialIntegrity"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 //schema 생성, ?을 붙이면 해당아이템은 옵션(or)임 (핸드폰으로 로그인하거나 이메일로 로그인한다는 가정)
