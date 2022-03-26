@@ -1,0 +1,24 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//schema 생성, ?을 붙이면 해당아이템은 옵션(or)임 (핸드폰으로 로그인하거나 이메일로 로그인한다는 가정)
+//?안붙인것은 모두 required
+//updatedAt를 붙이며 prisma가 해당 schema가 update될거라는것을 인지할거
+model User{
+  id Int @id @default(autoincrement())
+  phone Int? @unique
+  email String? @unique
+  name String
+  avatar String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
