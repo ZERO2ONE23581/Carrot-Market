@@ -4,6 +4,7 @@ interface LoginForm {
   username: string;
   password: string;
   email: string;
+  errors?: string;
 }
 
 export default function Forms() {
@@ -11,16 +12,24 @@ export default function Forms() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
+    setError,
+    resetField,
   } = useForm<LoginForm>({ mode: "onChange" });
 
   const onValid = (data: LoginForm) => {
     console.log(`VALID!!`);
+    setError("username", {
+      message: "YOU STILL SEE THIS ERROR BY LOGIC EVEN AFTER VALIDATION!",
+    });
+    resetField("password");
   };
   const onInValid = (errors: FieldErrors) => {
-    // console.log(errors);
+    console.log(errors);
   };
 
-  // console.log(errors);
+  setValue("username", "Junwoo");
 
   return (
     <form onSubmit={handleSubmit(onValid, onInValid)}>
