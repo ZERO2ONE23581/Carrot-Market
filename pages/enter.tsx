@@ -1,13 +1,32 @@
 import type { NextPage } from "next";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Button from "../components/button";
 import Input from "../components/input";
 import { cls } from "../libs/utils";
 
+interface EnterForm {
+  email?: string;
+  phone?: string;
+}
+
 const Enter: NextPage = () => {
+  const { register, watch, reset, handleSubmit } = useForm<EnterForm>();
+
   const [method, setMethod] = useState<"email" | "phone">("email");
-  const onEmailClick = () => setMethod("email");
-  const onPhoneClick = () => setMethod("phone");
+  const onEmailClick = () => {
+    reset(), setMethod("email"); //클릭하면 리셋
+  };
+  const onPhoneClick = () => {
+    reset(), setMethod("phone"); //클릭하면 리셋
+  };
+
+  console.log(watch());
+
+  const onValid = (data: EnterForm) => {
+    console.log(data);
+  };
+
   return (
     <div className="mt-16 px-4">
       <h3 className="text-3xl font-bold text-center">Enter to Carrot</h3>
@@ -39,12 +58,19 @@ const Enter: NextPage = () => {
             </button>
           </div>
         </div>
-        <form className="flex flex-col mt-8 space-y-4">
+        <form onSubmit={handleSubmit(onValid)} className="flex flex-col mt-8 space-y-4">
           {method === "email" ? (
-            <Input name="email" label="Email address" type="email" required />
+            <Input
+              register={register("email")}
+              name="email"
+              label="Email address"
+              type="email"
+              required
+            />
           ) : null}
           {method === "phone" ? (
             <Input
+              register={register("phone")}
               name="phone"
               label="Phone number"
               type="number"
@@ -53,18 +79,14 @@ const Enter: NextPage = () => {
             />
           ) : null}
           {method === "email" ? <Button text={"Get login link"} /> : null}
-          {method === "phone" ? (
-            <Button text={"Get one-time password"} />
-          ) : null}
+          {method === "phone" ? <Button text={"Get one-time password"} /> : null}
         </form>
 
         <div className="mt-8">
           <div className="relative">
             <div className="absolute w-full border-t border-gray-300" />
             <div className="relative -top-3 text-center ">
-              <span className="bg-white px-2 text-sm text-gray-500">
-                Or enter with
-              </span>
+              <span className="bg-white px-2 text-sm text-gray-500">Or enter with</span>
             </div>
           </div>
           <div className="grid grid-cols-2 mt-2 gap-3">
