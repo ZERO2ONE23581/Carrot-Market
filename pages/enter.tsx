@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../components/button";
 import Input from "../components/input";
-import { cls } from "../libs/utils";
+import useMutation from "../libs/client/useMutation";
+import { cls } from "../libs/client/utils";
 
 interface EnterForm {
   email?: string;
@@ -11,7 +12,10 @@ interface EnterForm {
 }
 
 const Enter: NextPage = () => {
-  const [loading, setLoading] = useState(false);
+  //1. 리팩토링 HOOK (enter함수를 발동시키면 mutation됨)
+  const [enter, { loading, data, error }] = useMutation("/api/users/enter");
+
+  const [submitting, setSubmitting] = useState(false);
   const { register, watch, reset, handleSubmit } = useForm<EnterForm>();
 
   const [method, setMethod] = useState<"email" | "phone">("email");
@@ -22,17 +26,9 @@ const Enter: NextPage = () => {
     reset(), setMethod("phone");
   };
 
+  //fetch를 숨기고 state를 이용한것
   const onValid = (data: EnterForm) => {
-    setLoading(true);
-    //1. 데이터 전송 (json형태로 api로 보냄)
-    fetch("/api/users/enter", {
-      method: "POST",
-      body: JSON.stringify(data),
-      //아래 코드 없으면 req.body.email 형태 컴파일링안됨!;
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(() => setLoading(false));
+    enter(data);
   };
 
   return (
@@ -87,10 +83,10 @@ const Enter: NextPage = () => {
             />
           ) : null}
           {method === "email" ? (
-            <Button text={loading ? "LOADING..." : "Get login link"} />
+            <Button text={submitting ? "LOADING..." : "Get login link"} />
           ) : null}
           {method === "phone" ? (
-            <Button text={loading ? "LOADING..." : "Get one-time password"} />
+            <Button text={submitting ? "LOADING..." : "Get one-time password"} />
           ) : null}
         </form>
 
