@@ -4,48 +4,26 @@ import client from "@libs/server/client";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { email, phone } = req.body;
-  let user;
-  //1. 유저가 입력한 이메일에 해당하는 유저가 있는지 찾는다.
-  if (email) {
-    user = await client.user.findUnique({
-      where: {
-        email,
-      },
-    });
-    if (user) console.log(`USER EXISTS!`);
-    //1-2. 유저가 없다면 user = 지금 만든 유저
-    if (!user) {
-      console.log(`DIDN'T FIND USER.. WILL CREATE NOW!`);
-      user = await client.user.create({
-        data: {
-          name: "Anonymous",
-          email,
-        },
-      });
-    }
-    console.log(user);
-  }
 
-  //2. 유저가 입력한 휴대폰 번호에 해당하는 유저가 있는지 찾는다.
-  if (phone) {
-    user = await client.user.findUnique({
-      where: {
-        phone: +phone,
-      },
-    });
-    if (user) console.log(`USER EXISTS!`);
-    //2-2. 유저가 없다면 user = 지금 만든 유저
-    if (!user) {
-      console.log(`DIDN'T FIND USER.. WILL CREATE NOW!`);
-      user = await client.user.create({
-        data: {
-          name: "Anonymous",
-          phone: +phone,
-        },
-      });
-    }
-    console.log(user);
-  }
+  //### UPSERT를 활용한 리팩토링 ###
+
+  const user = await client.user.upsert({
+    //1-1. 입력한 이메일이 있다면 ? => 해당하는 메일의 user를 찾는다.
+    //1-2. 입력한 번호가 있다면 ? => 해당하는 번호의 user를 찾는다.
+    where: {
+      ...(email ? { email } : {}),
+      ...(phone ? { phone: +phone } : {}),
+    },
+    //2. 없다면 입력값으로 새로운 user 데이터 생성
+    create: {
+      name: "Anonymous",
+      ...(email ? { email } : {}),
+      ...(phone ? { phone: +phone } : {}),
+    },
+    //3. 업데이트는 안함. (upsert사용시 필수적으로 코드 써줘야함)
+    update: {},
+  });
+  console.log(user);
 
   return res.status(200).end();
 }
