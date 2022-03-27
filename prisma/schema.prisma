@@ -15,12 +15,23 @@ datasource db {
 //schema 생성, ?을 붙이면 해당아이템은 옵션(or)임 (핸드폰으로 로그인하거나 이메일로 로그인한다는 가정)
 //?안붙인것은 모두 required
 //updatedAt를 붙이며 prisma가 해당 schema가 update될거라는것을 인지할거
-model User{
-  id Int @id @default(autoincrement())
-  phone Int? @unique
-  email String? @unique
-  name String
-  avatar String?
+model User {
+  name      String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  phone     Int?     @unique
+  email     String?  @unique
+  avatar    String?
+  tokens     Token[]
+}
+
+//userId의 reference는 User schema의 id 부분이다!
+model Token {  
+  id        Int      @id @default(autoincrement())
+  payload   String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
