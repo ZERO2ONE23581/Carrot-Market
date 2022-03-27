@@ -1,28 +1,26 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import withHandler from "@libs/server/withHandler";
+import withHandler, { ResponseType } from "@libs/server/withHandler";
 import client from "@libs/server/client";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const { email, phone } = req.body;
 
-  //1. 이메일(번호)을 입력했다면 ? => 해당하는 user를 찾는다.
-  const payload = email ? { email } : { phone: +phone };
+  const payload = Math.floor(100000 + Math.random() * 900000) + ""; //여섯자리랜덤숫자
+  const user = phone ? { phone: +phone } : email ? { email } : null;
+  if (!user) return res.status(400).json({ ok: false }); //Bad Request
 
-  //1. Token 생성 (payload와 user는 필수값)
+  //Create Token and User
   const token = await client.token.create({
     data: {
-      payload: "1234",
-      //token과 user를 연결
+      payload,
       user: {
-        //1-1. user를 찾으면 찾은 user를 token과 연결
-        //1-2. user를 찾지못하면 유저를 생성한다음 연결
         connectOrCreate: {
           where: {
-            ...payload,
+            ...user,
           },
           create: {
             name: "Anonymous",
-            ...payload,
+            ...user,
           },
         },
       },
@@ -30,7 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   });
   console.log(token);
 
-  return res.status(200).end();
+  return res.json({ ok: true });
 }
 
 export default withHandler("POST", handler);
