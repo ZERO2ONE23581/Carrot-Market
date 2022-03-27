@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
-import Layout from "../../components/layout";
-import TextArea from "../../components/textarea";
+import Layout from "@components/layout";
+import TextArea from "@components/textarea";
 
 const CommunityPostDetail: NextPage = () => {
   return (
@@ -13,15 +13,13 @@ const CommunityPostDetail: NextPage = () => {
           <div className="w-10 h-10 rounded-full bg-slate-300" />
           <div>
             <p className="text-sm font-medium text-gray-700">Steve Jebs</p>
-            <p className="text-xs font-medium text-gray-500">
-              View profile &rarr;
-            </p>
+            <p className="text-xs font-medium text-gray-500">View profile &rarr;</p>
           </div>
         </div>
         <div>
           <div className="mt-2 px-4 text-gray-700">
-            <span className="text-orange-500 font-medium">Q.</span> What is the
-            best mandu restaurant?
+            <span className="text-orange-500 font-medium">Q.</span> What is the best mandu
+            restaurant?
           </div>
           <div className="flex px-4 space-x-5 mt-3 text-gray-700 py-2.5 border-t border-b-[2px]  w-full">
             <span className="flex space-x-2 items-center text-sm">
@@ -64,9 +62,7 @@ const CommunityPostDetail: NextPage = () => {
           <div className="flex items-start space-x-3">
             <div className="w-8 h-8 bg-slate-200 rounded-full" />
             <div>
-              <span className="text-sm block font-medium text-gray-700">
-                Steve Jebs
-              </span>
+              <span className="text-sm block font-medium text-gray-700">Steve Jebs</span>
               <span className="text-xs text-gray-500 block ">2시간 전</span>
               <p className="text-gray-700 mt-2">
                 The best mandu restaurant is the one next to my house.
@@ -75,11 +71,7 @@ const CommunityPostDetail: NextPage = () => {
           </div>
         </div>
         <div className="px-4">
-          <TextArea
-            name="description"
-            placeholder="Answer this question!"
-            required
-          />
+          <TextArea name="description" placeholder="Answer this question!" required />
           <button className="mt-2 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 focus:outline-none ">
             Reply
           </button>
