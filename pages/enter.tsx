@@ -15,9 +15,7 @@ const Enter: NextPage = () => {
   //1. 리팩토링 HOOK (enter함수를 발동시키면 mutation됨)
   const [enter, { loading, data, error }] = useMutation("/api/users/enter");
 
-  const [submitting, setSubmitting] = useState(false);
-  const { register, watch, reset, handleSubmit } = useForm<EnterForm>();
-
+  const { register, reset, handleSubmit } = useForm<EnterForm>();
   const [method, setMethod] = useState<"email" | "phone">("email");
   const onEmailClick = () => {
     reset(), setMethod("email");
@@ -28,6 +26,7 @@ const Enter: NextPage = () => {
 
   //fetch를 숨기고 state를 이용한것
   const onValid = (data: EnterForm) => {
+    if (loading) return;
     enter(data);
   };
 
@@ -85,10 +84,10 @@ const Enter: NextPage = () => {
             />
           ) : null}
           {method === "email" ? (
-            <Button text={submitting ? "LOADING..." : "Get login link"} />
+            <Button text={loading ? "LOADING..." : "Get login link"} />
           ) : null}
           {method === "phone" ? (
-            <Button text={submitting ? "LOADING..." : "Get one-time password"} />
+            <Button text={loading ? "LOADING..." : "Get one-time password"} />
           ) : null}
         </form>
 
