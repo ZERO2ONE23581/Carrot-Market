@@ -1,7 +1,11 @@
+import mail from "@sendgrid/mail";
 import twilio from "twilio";
 import { NextApiRequest, NextApiResponse } from "next";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import client from "@libs/server/client";
+
+//SendGrid
+mail.setApiKey(process.env.SENDGRID_KEY!);
 
 //Twilio
 const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
@@ -38,6 +42,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       body: `Your login token is ${payload}.`,
     });
     console.log(message);
+  } else if (email) {
+    const email = await mail.send({
+      from: "zero2one23581@gmail.com",
+      to: "zero2one23581@gmail.com",
+      subject: `YOUR CARROT-MARKET VERIFICATION EMAIL`,
+      text: `YOUR TOKEN IS ${payload}`,
+      html: `<strong>YOUR TOKEN IS ${payload}</strong>`,
+    });
+    console.log(email);
   }
 
   return res.json({ ok: true });
