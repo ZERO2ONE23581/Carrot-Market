@@ -20,17 +20,18 @@ model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  phone     Int?     @unique
+  phone     BigInt?     @unique
   email     String?  @unique
   avatar    String?
   tokens     Token[]
 }
 
 //userId의 reference는 User schema의 id 부분이다!
+//Cascade는 부모요소가 삭제될때 본인도 삭제되도록함.
 model Token {  
   id        Int      @id @default(autoincrement())
   payload   String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
