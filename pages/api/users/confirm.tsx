@@ -1,10 +1,31 @@
+import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
+import client from "@libs/server/client";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
+  console.log(req.session);
   const { token } = req.body;
-  console.log(token);
-  res.status(200).end();
+  //입력한 토큰과 일치하는 토큰을 찾는다.
+  const exists = await client.token.findUnique({
+    where: {
+      payload: token,
+    },
+    include: { user: true }, // 토큰을 찾고 유저와 연결한다.
+  });
+  //토큰을 찾지 못하면
+  if (!exists) res.status(404).end();
+
+  //토큰을 찾으면 세션에 유저를 추가해주고, 그 유저의 아이디는 = 토큰의 유저아이디와 일치한다.
+  req.session.user = {
+    id: exists?.userId,
+  };
+  await req.session.save();
+  return res.status(200).end();
 }
 
-export default withHandler("POST", handler);
+//이런식으로 감싸주면 session을 사용할 수 있음.
+export default withIronSessionApiRoute(withHandler("POST", handler), {
+  cookieName: "carrot-session",
+  password: "asdlfkjas;djlfkasdl;fjkasdfasl;dfkj", // 쿠키를 암호화하는 비번
+});
