@@ -1,40 +1,34 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import client from "@libs/server/client";
-
-declare module "iron-session" {
-  //타입스크립트가 세션을 이해함.
-  interface IronSessionData {
-    user?: {
-      id: number;
-    };
-  }
-}
+import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  console.log(req.session);
-  const { token } = req.body;
-  //입력한 토큰과 일치하는 토큰을 찾는다.
-  const exists = await client.token.findUnique({
+  const { token } = req.body; //1. receive token from FrontEnd
+  //2. Looking for the token on db
+  const foundToken = await client.token.findUnique({
     where: {
       payload: token,
     },
-    include: { user: true }, // 토큰을 찾고 유저와 연결한다.
   });
-  //토큰을 찾지 못하면
-  if (!exists) return res.status(404).end();
+  //3. if there is no token found, return 404 error
+  if (!foundToken) return res.status(404).end();
 
-  //토큰을 찾으면 세션에 유저를 추가해주고, 그 유저의 아이디는 = 토큰의 유저아이디와 일치한다.
+  //4. if the token is found, then put the userId of the Token to the req.session.user
   req.session.user = {
-    id: exists.userId,
+    id: foundToken.userId,
   };
+
+  //5. save the session
   await req.session.save();
-  return res.status(200).end();
+
+  //6. delete the session where its userId is same as the userId of the foundToken
+  await client.token.deleteMany({
+    where: { userId: foundToken.userId },
+  });
+
+  return res.json({ ok: true });
 }
 
-//이런식으로 감싸주면 session을 사용할 수 있음.
-export default withIronSessionApiRoute(withHandler("POST", handler), {
-  cookieName: "carrot-session",
-  password: "asdlfkjas;djlfkasdl;fjkasdfasl;dfkj", // 쿠키를 암호화하는 비번
-});
+//Use helper Function for Iron Session
+export default withApiSession(withHandler("POST", handler));
