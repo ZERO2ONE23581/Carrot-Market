@@ -3,6 +3,15 @@ import { NextApiRequest, NextApiResponse } from "next";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import client from "@libs/server/client";
 
+declare module "iron-session" {
+  //타입스크립트가 세션을 이해함.
+  interface IronSessionData {
+    user?: {
+      id: number;
+    };
+  }
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   console.log(req.session);
   const { token } = req.body;
@@ -14,11 +23,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     include: { user: true }, // 토큰을 찾고 유저와 연결한다.
   });
   //토큰을 찾지 못하면
-  if (!exists) res.status(404).end();
+  if (!exists) return res.status(404).end();
 
   //토큰을 찾으면 세션에 유저를 추가해주고, 그 유저의 아이디는 = 토큰의 유저아이디와 일치한다.
   req.session.user = {
-    id: exists?.userId,
+    id: exists.userId,
   };
   await req.session.save();
   return res.status(200).end();
