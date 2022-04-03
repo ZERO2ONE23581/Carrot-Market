@@ -12,11 +12,11 @@ declare module "iron-session" {
   }
 }
 
+//For ONLY logged in user!
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  console.log(req.session.user);
+  //Find the user with matched session
   const profile = await client.user.findUnique({ where: { id: req.session.user?.id } });
   return res.json({ ok: true, profile });
 }
 
-//이런식으로 감싸주면 session을 사용할 수 있음.
-export default withApiSession(withHandler("GET", handler));
+export default withApiSession(withHandler({ method: "GET", handler }));

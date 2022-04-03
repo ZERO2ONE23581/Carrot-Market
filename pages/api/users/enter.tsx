@@ -56,4 +56,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   return res.json({ ok: true });
 }
 
-export default withHandler("POST", handler);
+//this is public api, so isPrivate is false. it reallyd depends on your app
+export default withHandler({ method: "POST", handler, isPrivate: false });
