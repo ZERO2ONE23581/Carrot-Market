@@ -16,6 +16,7 @@
     "react": "^18.0.0-rc.3",
     "react-dom": "^18.0.0-rc.3",
     "react-hook-form": "^7.28.1",
+    "swr": "^1.2.2",
     "twilio": "^3.76.0"
   },
   "devDependencies": {
