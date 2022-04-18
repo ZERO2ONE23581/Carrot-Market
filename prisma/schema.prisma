@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures=["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model User {
+  name          String
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  phone         String?        @unique
+  email         String?     @unique
+  avatar        String?
+  tokens        Token[]
+  products      Product[]
+}
+
+model Token {  
+  id             Int         @id @default(autoincrement())
+  payload        String      @unique
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int   
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  image         String    @db.MediumText
+  name          String
+  price         Int
+  description   String    @db.MediumText
+}
+// 데이터베이스는 텍스트 길이에 제한을 둔다. (그대로 두면 길이는 mysql의 normal varchar인 191자이다.)
+// 데이터베이스에 그냥 string으로 하면 용량제한이 걸려서 위와 같이 @db.MeduimText로 해준다.
