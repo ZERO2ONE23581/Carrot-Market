@@ -1,8 +1,8 @@
-import mail from "@sendgrid/mail";
-import twilio from "twilio";
-import { NextApiRequest, NextApiResponse } from "next";
-import withHandler, { ResponseType } from "@libs/server/withHandler";
-import client from "@libs/server/client";
+import mail from '@sendgrid/mail';
+import twilio from 'twilio';
+import { NextApiRequest, NextApiResponse } from 'next';
+import withHandler, { ResponseType } from '@libs/server/withHandler';
+import client from '@libs/server/client';
 
 //SendGrid
 mail.setApiKey(process.env.SENDGRID_KEY!);
@@ -10,10 +10,13 @@ mail.setApiKey(process.env.SENDGRID_KEY!);
 //Twilio
 const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
 
-async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseType>
+) {
   const { email, phone } = req.body;
 
-  const payload = Math.floor(100000 + Math.random() * 900000) + ""; //여섯자리랜덤숫자
+  const payload = Math.floor(100000 + Math.random() * 900000) + ''; //여섯자리랜덤숫자
   const user = phone ? { phone: +phone } : email ? { email } : null;
   if (!user) return res.status(400).json({ ok: false }); //Bad Request
 
@@ -27,7 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
             ...user,
           },
           create: {
-            name: "Anonymous",
+            name: 'Anonymous',
             ...user,
           },
         },
@@ -57,4 +60,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
 }
 
 //this is public api, so isPrivate is false. it reallyd depends on your app
-export default withHandler({ method: "POST", handler, isPrivate: false });
+export default withHandler({
+  methods: ['GET', 'POST'],
+  handler,
+  isPrivate: false,
+});
