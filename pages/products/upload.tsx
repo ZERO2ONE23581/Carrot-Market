@@ -5,16 +5,14 @@ import Layout from '@components/layout';
 import TextArea from '@components/textarea';
 import { useForm } from 'react-hook-form';
 import useMutation from '@libs/client/useMutation';
-
-interface UploadProductForm {
-  name: string;
-  price: number;
-  description: string;
-}
+import { useEffect } from 'react';
+import { Product } from '@prisma/client';
+import { useRouter } from 'next/router';
 
 const Upload: NextPage = () => {
   //API
-  const [uploadProduct, { loading, data }] = useMutation('/api/products');
+  const [uploadProduct, { loading, data }] =
+    useMutation<UploadProdcutMutation>('/api/products');
 
   //FORM
   const { register, handleSubmit } = useForm<UploadProductForm>();
@@ -22,6 +20,14 @@ const Upload: NextPage = () => {
     if (loading) return; //로딩중일때 kill
     uploadProduct(data);
   };
+
+  //DATA from API
+  const router = useRouter();
+  useEffect(() => {
+    if (data?.ok) {
+      router.push(`/products/${data.product.id}`);
+    }
+  }, [data]);
 
   //
   return (
@@ -58,7 +64,7 @@ const Upload: NextPage = () => {
           required
           label="Price"
           name="price"
-          type="text"
+          type="number"
           kind="price"
         />
         <TextArea
@@ -74,3 +80,13 @@ const Upload: NextPage = () => {
 };
 
 export default Upload;
+
+interface UploadProductForm {
+  name: string;
+  price: number;
+  description: string;
+}
+interface UploadProdcutMutation {
+  ok: boolean;
+  product: Product;
+}
