@@ -57,8 +57,9 @@ const CommunityPostDetail: NextPage = () => {
   useEffect(() => {
     if (answerData && answerData.ok) {
       reset();
+      mutate(); //뮤테이션을 그냥 이렇게 쓰면 re-fetching 효과가 있다
     }
-  }, [answerData, reset]);
+  }, [answerData, reset, mutate]);
   //
   return (
     <Layout canGoBack>
