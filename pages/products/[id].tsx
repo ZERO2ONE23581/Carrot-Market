@@ -22,12 +22,9 @@ const ItemDetail: NextPage = () => {
   const onFavClick = () => {
     if (!data) return;
     bound((prev) => prev && { ...prev, isLiked: !prev.isLiked }, false);
-    mutate('/api/users/me', (prev: any) => ({ ok: !prev.ok }), false);
-    //현재 화면의 데이터를 '표면적으로' 변경하길 원한다면 bound
-    //다른 화면의 데이터를 '표면적으로' 변경하길 원하면 unbound 활용
+    // mutate('/api/users/me', (prev: any) => ({ ok: !prev.ok }), false);
 
     toggleFav({});
-    //POST -> fav api -> GET -> [id] api
   };
 
   //
@@ -135,4 +132,5 @@ interface ItemDetailResponse {
 
 interface ProductWithUser extends Product {
   user: User;
+  _count: number;
 }

@@ -25,7 +25,7 @@ const Home: NextPage = () => {
             title={product.name}
             price={product.price}
             comments={1}
-            hearts={1}
+            hearts={product._count.favorites}
           />
         ))}
         <FloatingButton href="/products/upload">
@@ -53,7 +53,13 @@ const Home: NextPage = () => {
 export default Home;
 
 //ts
+interface ProductWithCount extends Product {
+  _count: {
+    favorites: number;
+  };
+}
+
 interface ProductsResponse {
   ok: boolean;
-  products: Product[];
+  products: ProductWithCount[];
 }
