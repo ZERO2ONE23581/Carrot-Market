@@ -11,14 +11,21 @@ import { cls } from '@libs/client/utils';
 const ItemDetail: NextPage = () => {
   //url parameter control
   const router = useRouter();
-  const { data } = useSWR<ItemDetailResponse>(
+  const { data, mutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
 
   //좋아요 기능
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
+    //ui를 즉시 바꾸려고 할때 mutate를 씀
+    if (!data) return;
+    mutate({ ...data, isLiked: !data.isLiked }, false);
+    //mutate안에 있는 object가 swr에서 받아온 data를 대체한다
+    //true이면 mutate 실행후 다시 본데이터를 swr에서 받아온다. false면 받아오지 않고 mutate된 데이터를 유지한다.
+
     toggleFav({});
+    //POST -> fav api -> GET -> [id] api
   };
 
   //
@@ -65,9 +72,9 @@ const ItemDetail: NextPage = () => {
                     fill="currentColor"
                   >
                     <path
-                      fill-rule="evenodd"
+                      fillRule="evenodd"
                       d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                 ) : (
