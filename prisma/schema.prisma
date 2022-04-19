@@ -12,6 +12,7 @@ datasource db {
 model User {
   tokens        Token[]
   products      Product[]
+  favorites      Favorites[]
   id            Int         @id @default(autoincrement())
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
@@ -33,6 +34,7 @@ model Token {
 model Product {
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
+  favorites     Favorites[]
   id            Int       @id @default(autoincrement())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -43,3 +45,13 @@ model Product {
 }
 // 데이터베이스는 텍스트 길이에 제한을 둔다. (그대로 두면 길이는 mysql의 normal varchar인 191자이다.)
 // 데이터베이스에 그냥 string으로 하면 용량제한이 걸려서 위와 같이 @db.MeduimText로 해준다.
+
+model Favorites {
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId     Int
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
