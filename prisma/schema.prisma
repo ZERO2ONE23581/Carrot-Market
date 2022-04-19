@@ -10,32 +10,32 @@ datasource db {
 }
 
 model User {
-  name          String
+  tokens        Token[]
+  products      Product[]
   id            Int         @id @default(autoincrement())
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  name          String
   phone         String?        @unique
   email         String?     @unique
   avatar        String?
-  tokens        Token[]
-  products      Product[]
 }
 
 model Token {  
-  id             Int         @id @default(autoincrement())
-  payload        String      @unique
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         Int   
+  id             Int         @id @default(autoincrement())
+  payload        String      @unique
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }
 
 model Product {
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
   id            Int       @id @default(autoincrement())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        Int
   image         String    @db.MediumText
   name          String
   price         Int
