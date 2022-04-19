@@ -25,9 +25,21 @@ async function handler(
       AND: { id: { not: product?.id } }, //관련단어상품의 아이디와 중복되지 않는 상품
     },
   });
+  //좋아요 찾기
+  const { user } = req.session;
+
+  const isLiked = Boolean(
+    await client.favorites.findFirst({
+      where: {
+        productId: product?.id,
+        userId: user?.id,
+      },
+      select: { id: true },
+    })
+  );
 
   //
-  return res.json({ ok: true, product, relatedProducts });
+  return res.json({ ok: true, product, relatedProducts, isLiked });
 }
 
 export default withApiSession(withHandler({ methods: ['GET'], handler }));
