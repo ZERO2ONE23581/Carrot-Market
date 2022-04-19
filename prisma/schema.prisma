@@ -12,12 +12,15 @@ datasource db {
 model User {
   tokens        Token[]
   products      Product[]
-  favorites      Favorites[]
+  favorites     Favorites[]
+  post          Post[]
+  answer        Answer[]
+  wondering     Wondering[]
   id            Int         @id @default(autoincrement())
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   name          String
-  phone         String?        @unique
+  phone         String?     @unique
   email         String?     @unique
   avatar        String?
 }
@@ -31,17 +34,17 @@ model Token {
   updatedAt      DateTime    @updatedAt
 }
 
-model Product {
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Product { 
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
   favorites     Favorites[]
-  id            Int       @id @default(autoincrement())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  image         String    @db.MediumText
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  image         String      @db.MediumText
   name          String
   price         Int
-  description   String    @db.MediumText
+  description   String      @db.MediumText
 }
 // 데이터베이스는 텍스트 길이에 제한을 둔다. (그대로 두면 길이는 mysql의 normal varchar인 191자이다.)
 // 데이터베이스에 그냥 string으로 하면 용량제한이 걸려서 위와 같이 @db.MeduimText로 해준다.
@@ -51,6 +54,39 @@ model Favorites {
   productId     Int
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Post {
+  answer        Answer[]
+  wondering     Wondering[]
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  question      String      @db.MediumText
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Answer {
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId        Int
+  text          String    @db.MediumText
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Wondering {
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId        Int
+  text          String    @db.MediumText
   id            Int       @id @default(autoincrement())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
