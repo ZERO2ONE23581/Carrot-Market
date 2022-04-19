@@ -7,6 +7,7 @@ import useMutation from '@libs/client/useMutation';
 import { useEffect } from 'react';
 import { Post } from '@prisma/client';
 import { useRouter } from 'next/router';
+import useCoords from '@libs/client/useCoords';
 
 const Write: NextPage = () => {
   const router = useRouter();
@@ -15,7 +16,7 @@ const Write: NextPage = () => {
   const [post, { loading, data }] = useMutation<WriteResponse>(`/api/posts`);
   const onValid = (data: WriteForm) => {
     if (loading) return;
-    post(data);
+    post({ ...data, latitude, longitude });
   };
 
   //page
@@ -24,6 +25,10 @@ const Write: NextPage = () => {
       router.push(`/community/${data.post.id}`);
     }
   }, [data, router]);
+
+  //GPS
+  const { latitude, longitude } = useCoords();
+
   //
   return (
     <Layout canGoBack title="Write Post">

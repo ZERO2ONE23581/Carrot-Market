@@ -2,18 +2,19 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import withHandler, { ResponseType } from '@libs/server/withHandler';
 import client from '@libs/server/client';
 import { withApiSession } from '@libs/server/withSession';
-import answers from './[id]/answers';
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) {
-  const { question } = req.body;
+  const { question, latitude, longitude } = req.body;
   const { user } = req.session;
   if (req.method === 'POST') {
     const post = await client.post.create({
       data: {
         question,
+        latitude,
+        longitude,
         user: {
           connect: {
             id: user?.id,
