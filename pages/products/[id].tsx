@@ -2,27 +2,29 @@ import type { NextPage } from 'next';
 import Button from '@components/button';
 import Layout from '@components/layout';
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import Link from 'next/link';
 import { Product, User } from '@prisma/client';
 import useMutation from '@libs/client/useMutation';
 import { cls } from '@libs/client/utils';
+import useUser from '@libs/client/useUser';
 
 const ItemDetail: NextPage = () => {
-  //url parameter control
   const router = useRouter();
-  const { data, mutate } = useSWR<ItemDetailResponse>(
+  const { mutate } = useSWRConfig();
+  const { user, isLoading } = useUser();
+  const { data, mutate: bound } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
 
   //좋아요 기능
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
-    //ui를 즉시 바꾸려고 할때 mutate를 씀
     if (!data) return;
-    mutate({ ...data, isLiked: !data.isLiked }, false);
-    //mutate안에 있는 object가 swr에서 받아온 data를 대체한다
-    //true이면 mutate 실행후 다시 본데이터를 swr에서 받아온다. false면 받아오지 않고 mutate된 데이터를 유지한다.
+    bound((prev) => prev && { ...prev, isLiked: !prev.isLiked }, false);
+    mutate('/api/users/me', (prev: any) => ({ ok: !prev.ok }), false);
+    //현재 화면의 데이터를 '표면적으로' 변경하길 원한다면 bound
+    //다른 화면의 데이터를 '표면적으로' 변경하길 원하면 unbound 활용
 
     toggleFav({});
     //POST -> fav api -> GET -> [id] api
