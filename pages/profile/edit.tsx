@@ -5,10 +5,17 @@ import Layout from '@components/layout';
 import useUser from '@libs/client/useUser';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
+import useMutation from '@libs/client/useMutation';
+
+interface EditProfileResponse {
+  ok: boolean;
+  error?: string;
+}
 
 interface EditProfileForm {
   email?: string;
   phone?: string;
+  name?: string;
   formErrors?: string;
 }
 
@@ -24,15 +31,33 @@ const EditProfile: NextPage = () => {
 
   //초기값 설정
   useEffect(() => {
+    if (user?.name) setValue('name', user.name);
     if (user?.email) setValue('email', user.email);
     if (user?.phone) setValue('phone', user.phone);
   }, [user, setValue]);
-  //
-  const onValid = ({ email, phone }: EditProfileForm) => {
-    if (email === '' && phone === '') {
-      setError('formErrors', { message: 'Email or Phone Number is required!' });
+
+  //handler
+  const [editProfile, { data, loading }] =
+    useMutation<EditProfileResponse>(`/api/users/me`);
+
+  //Submit
+  const onValid = ({ email, phone, name }: EditProfileForm) => {
+    if (loading) return;
+    if (email === '' && phone === '' && name === '') {
+      return setError('formErrors', {
+        message: 'Email or Phone Number is required!',
+      });
     }
+    editProfile({ email, phone, name });
   };
+  //
+
+  useEffect(() => {
+    if (data && !data.ok && data.error) {
+      setError('formErrors', { message: data.error });
+    }
+  }, [data, setError]);
+
   //
   return (
     <Layout canGoBack title="Edit Profile">
@@ -53,6 +78,13 @@ const EditProfile: NextPage = () => {
           </label>
         </div>
         <Input
+          register={register('name')}
+          required={false}
+          label="Name"
+          name="name"
+          type="text"
+        />
+        <Input
           register={register('email')}
           required={false}
           label="Email address"
@@ -72,7 +104,7 @@ const EditProfile: NextPage = () => {
             {errors.formErrors.message}
           </span>
         ) : null}
-        <Button text="Update profile" />
+        <Button text={loading ? 'Loading...' : 'Update profile'} />
       </form>
     </Layout>
   );
