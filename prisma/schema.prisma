@@ -10,7 +10,11 @@ datasource db {
 }
 
 model User {
-  id                Int         @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())  
+  name              String
+  phone             String?     @unique
+  email             String?     @unique
+  avatar            String?
   tokens            Token[]
   products          Product[]
   favorites         Favorites[]
@@ -22,35 +26,31 @@ model User {
   sales             Sale[]
   purchases         Purchase[]
   record            Record[]
-  name              String
-  phone             String?     @unique
-  email             String?     @unique
-  avatar            String?
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 }
 
 model Token {  
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         Int   
   id             Int         @id @default(autoincrement())
   payload        String      @unique
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int   
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }
 
 model Product { 
   id            Int         @id @default(autoincrement())
+  image         String      @db.MediumText
+  name          String
+  price         Int
+  description   String      @db.MediumText
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
   favorites     Favorites[]
   sales         Sale[]
   purchases     Purchase[]
   record        Record[]
-  image         String      @db.MediumText
-  name          String
-  price         Int
-  description   String      @db.MediumText  
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
@@ -59,24 +59,24 @@ model Product {
 
 model Post {
   id            Int         @id @default(autoincrement())
+  question      String      @db.MediumText
+  latitude      Float?
+  longitude     Float?
   answer        Answer[]
   wondering     Wondering[]
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
-  question      String      @db.MediumText
-  latitude      Float?
-  longitude     Float?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
 
 model Answer {
   id            Int       @id @default(autoincrement())
+  text          String    @db.MediumText
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        Int
   post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId        Int
-  text          String    @db.MediumText
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -93,11 +93,12 @@ model Wondering {
 
 model Review {
   id                Int       @id @default(autoincrement())
+  text              String    @db.MediumText
+  score             Int       @default(1)
   createBy          User      @relation(name:"writtenReviews", fields: [createById], references: [id], onDelete: Cascade)
   createById        Int
   createdFor        User      @relation(name:"receivedReviews", fields: [createdForId], references: [id], onDelete: Cascade)
   createdForId      Int
-  text              String    @db.MediumText
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 }
