@@ -11,6 +11,19 @@ async function handler(
   //Find the user with matched session
   const profile = await client.user.findUnique({
     where: { id: req.session.user?.id },
+    include: {
+      products: {
+        include: {
+          _count: {
+            select: {
+              favorites: true,
+            },
+          },
+        },
+      },
+      sales: true,
+      purchases: true,
+    },
   });
   return res.json({ ok: true, profile });
 }

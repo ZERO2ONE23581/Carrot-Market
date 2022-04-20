@@ -53,7 +53,7 @@ const Home: NextPage = () => {
 export default Home;
 
 //ts
-interface ProductWithCount extends Product {
+export interface ProductWithCount extends Product {
   _count: {
     favorites: number;
   };
