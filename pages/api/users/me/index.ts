@@ -15,6 +15,4 @@ async function handler(
   return res.json({ ok: true, profile });
 }
 
-export default withApiSession(
-  withHandler({ methods: ['GET', 'POST'], handler })
-);
+export default withApiSession(withHandler({ methods: ['GET'], handler }));
