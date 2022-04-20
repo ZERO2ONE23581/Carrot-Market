@@ -95,8 +95,8 @@ model Review {
   id                Int       @id @default(autoincrement())
   text              String    @db.MediumText
   score             Int       @default(1)
-  createBy          User      @relation(name:"writtenReviews", fields: [createById], references: [id], onDelete: Cascade)
-  createById        Int
+  createdBy          User      @relation(name:"writtenReviews", fields: [createdById], references: [id], onDelete: Cascade)
+  createdById        Int
   createdFor        User      @relation(name:"receivedReviews", fields: [createdForId], references: [id], onDelete: Cascade)
   createdForId      Int
   createdAt         DateTime  @default(now())

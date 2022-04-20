@@ -16,7 +16,7 @@ async function handler(
       createdForId: user?.id,
     },
     include: {
-      createBy: {
+      createdBy: {
         select: {
           id: true,
           name: true,
