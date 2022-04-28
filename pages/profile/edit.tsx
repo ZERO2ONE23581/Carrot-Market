@@ -36,6 +36,10 @@ const EditProfile: NextPage = () => {
     if (user?.name) setValue('name', user.name);
     if (user?.email) setValue('email', user.email);
     if (user?.phone) setValue('phone', user.phone);
+    if (user?.avatar)
+      setAvatarPreview(
+        `https://imagedelivery.net/akzZnR6sxZ1bwXZp9XYgsg/${user?.avatar}/public`
+      );
   }, [user, setValue]);
 
   //handler
@@ -52,23 +56,24 @@ const EditProfile: NextPage = () => {
     }
     if (avatar && avatar.length > 0 && user?.id) {
       //1. Ask for CF url
-      const { id, uploadURL } = await (await fetch(`/api/files`)).json();
+      const { uploadURL } = await (await fetch(`/api/files`)).json();
 
       //2. Upload file to CF url
       const form = new FormData();
       form.append('file', avatar[0], user?.id + '');
-      await fetch(uploadURL, {
-        method: 'POST',
-        body: form,
-      });
-      //
-      return;
-      //
+      const {
+        result: { id },
+      } = await (
+        await fetch(uploadURL, {
+          method: 'POST',
+          body: form,
+        })
+      ).json();
       editProfile({
         email,
         phone,
         name,
-        //avatarUrl: CF url
+        avatarId: id,
       });
     } else {
       editProfile({ email, phone, name });
