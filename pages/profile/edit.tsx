@@ -43,18 +43,37 @@ const EditProfile: NextPage = () => {
     useMutation<EditProfileResponse>(`/api/users/me`);
 
   //Submit
-  const onValid = ({ email, phone, name, avatar }: EditProfileForm) => {
-    console.log(avatar);
-    return;
+  const onValid = async ({ email, phone, name, avatar }: EditProfileForm) => {
     if (loading) return;
     if (email === '' && phone === '' && name === '') {
       return setError('formErrors', {
         message: 'Email or Phone Number is required!',
       });
     }
-    editProfile({ email, phone, name });
+    if (avatar && avatar.length > 0 && user?.id) {
+      //1. Ask for CF url
+      const { id, uploadURL } = await (await fetch(`/api/files`)).json();
+
+      //2. Upload file to CF url
+      const form = new FormData();
+      form.append('file', avatar[0], user?.id + '');
+      await fetch(uploadURL, {
+        method: 'POST',
+        body: form,
+      });
+      //
+      return;
+      //
+      editProfile({
+        email,
+        phone,
+        name,
+        //avatarUrl: CF url
+      });
+    } else {
+      editProfile({ email, phone, name });
+    }
   };
-  //
 
   useEffect(() => {
     if (data && !data.ok && data.error) {
